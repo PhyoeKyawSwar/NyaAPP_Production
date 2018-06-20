@@ -46,7 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,MessagingDelegate {
         }
         
         application.registerForRemoteNotifications()
-        
+        // Testing Git commit
         return true
     }
     
