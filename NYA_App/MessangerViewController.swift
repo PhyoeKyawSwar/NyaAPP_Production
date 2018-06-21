@@ -347,6 +347,8 @@ class MessangerViewController: UIViewController , UIGestureRecognizerDelegate{
     var poll_options_Array = [Dictionary<String,Any>]()
     var vote_poll_id = Int()
     var voteArray = [Dictionary<String,Any>]()
+    
+    var myProfilePic = String()
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -418,6 +420,18 @@ class MessangerViewController: UIViewController , UIGestureRecognizerDelegate{
         
         self.hideVoteView()
         
+        if let profile_pic = UserDefaults.standard.value(forKey: "FB_PICTURE") as? String
+        {
+            myProfilePic = profile_pic
+        }
+        else
+        {
+            if let user_profile_pic = UserDefaults.standard.value(forKey: "User_Profile_Pic") as? String
+            {
+                myProfilePic = user_profile_pic
+            }
+            
+        }
         
         // Do any additional setup after loading the view.
     }
@@ -715,8 +729,10 @@ class MessangerViewController: UIViewController , UIGestureRecognizerDelegate{
        {
         self.ref_privat_chat = Firebase_Constant.refs.databasechat.child("private_chat/\(self.private_Chat_String)").childByAutoId()
         let currentTimeStamp = Date().toMillis()
-        let  message = ["createdAt": currentTimeStamp, "message" : txtMessage.text , "sender_id" : UserDefaults.standard.value(forKey: "USER_ID") as! Int] as [String : Any]
+        let  message = ["createdAt": currentTimeStamp, "message" : txtMessage.text , "sender_id" : UserDefaults.standard.value(forKey: "USER_ID") as! Int , "message_type" : "text" , "poll_id" : 0 , "userProfile" : myProfilePic] as [String : Any]
         self.ref_privat_chat.setValue(message)
+        
+       // let ref = Firebase_Constant.refs.databasechat.child("users/\(UserDefaults.standard.value(forKey: "SIGN_UP_UNIQUE_STRING") as! String)/")
         
         
         }

@@ -28,7 +28,8 @@ class ChatListViewController: UIViewController {
     var previewMessage = [String]()
     var groupArray = [GroupChatList]()
     var public_array = [[String : Any]]()
-    
+    var friendListKey = [String]()
+    var lastMessage = [[String : Any]]()
     var tableStatus = 0   // 0 for private  , 1 for group and 2 for public
 
     override func viewDidLoad() {
@@ -191,33 +192,70 @@ class ChatListViewController: UIViewController {
                     let dict = data["friendList"] as! [String : Any]
                     
                     for key in dict.keys{
-                        let dictionary = dict[key]
-                        self.userArray.append(dictionary as! [String : Any])
+                        let dictionary = dict[key] as! [String : Any]
+                        self.userArray.append(dictionary )
+                        
+                        self.getLastMessage(userString: key, user: dictionary )
+                        self.friendListKey.append(key)
                         
                     }
+                    
                 }
                 }
-              
-               
               
             }
             print("User array count",self.userArray.count)
             DispatchQueue.main.async {
                 HUD.hide()
-                self.tblChatList.rowHeight = 70
-                self.tblChatList.estimatedRowHeight = UITableViewAutomaticDimension
-                self.tblChatList.delegate = self
-                self.tblChatList.dataSource = self
-                self.tblChatList.reloadData()
+                
             }
         })
         
-       
+        DispatchQueue.main.async {
+           
+            self.tblChatList.rowHeight = 80
+            self.tblChatList.estimatedRowHeight = UITableViewAutomaticDimension
+            self.tblChatList.delegate = self
+            self.tblChatList.dataSource = self
+            self.tblChatList.reloadData()
+        }
         
-        
-            
     }
     
+    func getLastMessage(userString : String , user : [String : Any])
+    {
+      
+        Firebase_Constant.refs.databasechat.child("private_chat/\(user["private_chat_id"] as! String)").queryLimited(toLast: 1).observe(DataEventType.childAdded, with: { (snapshot) in
+            
+            if let data = snapshot.value as? [String : Any]
+            {
+                print("Data ::::", data)
+                
+                self.lastMessage.append(data)
+            }
+        })
+        
+        DispatchQueue.main.async {
+            
+            self.tblChatList.rowHeight = 80
+            self.tblChatList.estimatedRowHeight = UITableViewAutomaticDimension
+            
+            self.tblChatList.delegate = self
+            self.tblChatList.dataSource = self
+            self.tblChatList.reloadData()
+        }
+    }
+    
+    
+    func timeToDate (timestamp : Double) -> String
+    {
+        let date = Date(timeIntervalSince1970: Double(timestamp)/1000)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm" //Specify your format that you want
+        let strDate = dateFormatter.string(from: date)
+        
+        return strDate
+    }
     override func viewDidDisappear(_ animated: Bool) {
        
     }
@@ -236,6 +274,9 @@ class ChatListViewController: UIViewController {
 
 extension ChatListViewController : UITableViewDataSource,UITableViewDelegate
 {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableViewAutomaticDimension
+    }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if tableStatus == 1
         {
@@ -289,14 +330,34 @@ extension ChatListViewController : UITableViewDataSource,UITableViewDelegate
             cell.lblName.text = private_chat["name"] as! String
             cell.lblName.font = UIFont(name: BLACK_FONT, size: NORMAL_FONT_SIZE)
             
-            if let profile_pic = private_chat["profile_picture"] as? String
+            if lastMessage.count > 0
             {
-                cell.imgProfile.setimage(url_string: "\(image_url_host)/\(profile_pic)")
+                if let lastmessage = lastMessage[indexPath.row] as? [String : Any]
+                {
+                    cell.lblPreviousText.text = lastmessage["message"] as? String ?? ""
+                    cell.lblPreviousText.font = UIFont(name: LIGHT_FONT, size: NORMAL_FONT_SIZE)
+                    
+                    let date = self.timeToDate(timestamp: lastmessage["createdAt"] as? Double ?? 0.0)
+                    cell.lblTime.text = date
+                }
+                
             }
-            cell.lblPreviousText.text = ""
-            cell.lblPreviousText.font = UIFont(name: LIGHT_FONT, size: NORMAL_FONT_SIZE)
+           
+            if let profile_pic = private_chat["userProfile"] as? String
+            {
+                if profile_pic.contains("/storage")
+                {
+                    cell.imgProfile.setUserimage(url_string: "\(image_url_host)\(profile_pic)")
+                    
+                }
+                else
+                {
+                    cell.imgProfile.setUserimage(url_string: "\(profile_pic)")
+                    
+                }
+            }
+            
             cell.lblPreviousText.textColor = LIGHT_GRAY_COLOR
-             cell.profileWidth.constant = 50
             
            // cell.lblName.text = private_chat["name"] as! String
            // cell.lblPreviousText.text = previewMessage[indexPath.row]

@@ -7,7 +7,7 @@
 //
 
 import XCTest
-@testable import NYA_App
+@testable import FirebaseCore
 
 class NYA_AppTests: XCTestCase {
     

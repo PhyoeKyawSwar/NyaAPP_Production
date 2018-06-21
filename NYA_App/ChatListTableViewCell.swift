@@ -14,6 +14,7 @@ class ChatListTableViewCell: UITableViewCell {
     @IBOutlet weak var lblName: UILabel!
     @IBOutlet weak var lblPreviousText: UILabel!
     @IBOutlet weak var profileWidth: NSLayoutConstraint!
+    @IBOutlet weak var lblTime: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

@@ -148,15 +148,23 @@ class EditViewController: UIViewController,UIImagePickerControllerDelegate,UINav
         APIFunction.sharedInstance.USER_ID = user_dict.id
         APIFunction.sharedInstance.url_string = "users/\(user_dict.id)"
         APIFunction.sharedInstance.apiFunction(method: "users/\(user_dict.id)", parameter: dict, methodType: "PATCH") { (data, statusCode) in
+            print("Data ::::",data)
             var message = ""
             if statusCode == 204
             {
-                   message = "Successfully updated user info!"
+                
+                UserDefaults.standard.set("", forKey: "FB_PICTURE")
+                
+               message = "Successfully updated user info!"
                 let alert = UIAlertController(title: "Information", message: message, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) in
                     self.navigationController?.popViewController(animated: true)
                 }))
-                self.present(alert, animated: true, completion: nil)
+                DispatchQueue.main.async {
+                    self.present(alert, animated: true, completion: nil)
+                    
+                    HUD.hide()
+                }
                 
             }
             else
@@ -165,11 +173,14 @@ class EditViewController: UIViewController,UIImagePickerControllerDelegate,UINav
                 let alert = UIAlertController(title: "Information", message: message, preferredStyle: .alert)
                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 self.present(alert, animated: true, completion: nil)
+                DispatchQueue.main.async {
+                    self.present(alert, animated: true, completion: nil)
+                    
+                    HUD.hide()
+                }
             }
             
-            DispatchQueue.main.async {
-                HUD.hide()
-            }
+          
            
         }
  

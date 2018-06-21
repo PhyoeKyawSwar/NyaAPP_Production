@@ -62,6 +62,10 @@ class APIFunction: NSObject {
         }
         
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            
+            print("Data ",data)
+            print("Response", response)
+            print("Error ",error?.localizedDescription)
             guard let data = data, error == nil else {
                 // check for fundamental networking error
                 print("error=\(String(describing: error))")

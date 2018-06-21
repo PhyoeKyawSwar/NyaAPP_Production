@@ -285,7 +285,7 @@ class HomeViewController: _BaseViewController {
     {
         HUD.show(.systemActivity)
         APIFunction.sharedInstance.apiGETMethod(method: "user") { (response) in
-            print("Http status code",response.status)
+            print("Http status code",response.result)
             if response.error == nil
             {
                 if response.status == 200
@@ -301,8 +301,7 @@ class HomeViewController: _BaseViewController {
                             UserDefaults.standard.set(User_Dict.name , forKey: "USER_NAME")
                             UserDefaults.standard.set(User_Dict.id , forKey: "USER_ID")
                             UserDefaults.standard.set(User_Dict.unique_string , forKey: "SIGN_UP_UNIQUE_STRING")
-                            
-                            
+                            UserDefaults.standard.set(User_Dict.profile_picture, forKey: "User_Profile_Pic")
                            
                             
                         }

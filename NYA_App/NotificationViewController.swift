@@ -69,10 +69,19 @@ extension NotificationViewController : UITableViewDataSource , UITableViewDelega
         let cell = tableView.dequeueReusableCell(withIdentifier: "NotiTableViewCell") as! NotiTableViewCell
         let dict = notiArray[indexPath.row]
         cell.lblTitle.setNormalLabel(text: dict["title"] as? String ?? "", color: BLACK_COLOR, size: 15.0, font_name: BOLD_FONT)
-        cell.lblDesc.setNormalLabel(text: "phyokyawswar1 invited you to join going plan. phyokyawswar1 invited you to join going plan. phyokyawswar1 invited you to join going plan. phyokyawswar1 invited you to join going plan.", color: GRAY_COLOR, size: 13.0, font_name: LIGHT_FONT)
+        cell.lblDesc.setNormalLabel(text: dict["message"] as? String ?? "", color: GRAY_COLOR, size: 13.0, font_name: LIGHT_FONT)
         cell.selectionStyle = UITableViewCellSelectionStyle.none
         
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let dict = notiArray[indexPath.row]
+        
+        let controller = AppStoryboard.Main.instance.instantiateViewController(withIdentifier: "NotiDetailViewController") as! NotiDetailViewController
+        controller.detailDict = dict
+        self.navigationController?.pushViewController(controller, animated: true)
+        
     }
 }
 
